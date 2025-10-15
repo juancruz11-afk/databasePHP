@@ -30,7 +30,7 @@
       <li><a href="torneos.html">Torneos</a></li>
       <li><a href="actividades.html">Actividades</a></li>
       <li><a href="contacto.html">Contacto</a></li>
-      <li><a href="login.html">Iniciar Sesion</a></li>
+      <li><a href="login.html">Iniciar Seccion 🔐 Admin</a></li>
     </ul>
   </nav>
 
@@ -39,7 +39,10 @@
     <h1>Contacto</h1>
     <p>Si tienes dudas o comentarios, envianos un mensaje a traves del siguiente formulario:</p>
 
-    <form class="contact-form">
+    <!-- Mensaje de respuesta (se mostrará dinámicamente) -->
+    <div id="mensaje-respuesta" style="display: none;"></div>
+
+    <form id="formularioContacto" class="contact-form">
       <label for="nombre">Nombre:</label>
       <input type="text" id="nombre" name="nombre" required>
 
@@ -52,5 +55,7 @@
       <button type="submit">Enviar</button>
     </form>
   </main>
+  <!-- Script de contacto -->
+  <script src="../Back-End-Usuario/Contacto.js"></script>
 </body>
 </html>

@@ -1,12 +1,14 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "117546JuA";
-$db = "centro_deportivo_uabc";
+$servidor = "localhost";
+$usuario = "root";
+$password = "117546JuA";
+$bd = "centro_deportivo_uabc";
 
-$conn = new mysqli($host, $user, $pass, $db);
+$conexion = mysqli_connect($servidor, $usuario, $password, $bd);
 
-if ($conn->connect_error) {
-    die(json_encode(["error" => "Error de conexión: " . $conn->connect_error]));
+if (!$conexion) {
+    die("Error de conexión: " . mysqli_connect_error());
 }
+
+mysqli_set_charset($conexion, "utf8");
 ?>

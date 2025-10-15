@@ -1,44 +1,59 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const main = document.querySelector(".page-content");
+    cargarEventos();
+});
 
-  fetch("../Back-End-PHP/obtenerEventos.php")
-    .then(res => res.json())
-    .then(data => {
-      if (!data || data.length === 0) {
-        main.insertAdjacentHTML("beforeend", "<p>No hay eventos disponibles.</p>");
-        return;
-      }
+function cargarEventos(tipo = "") {
+    const main = document.querySelector("main");
+    
+    // Construir URL con filtro opcional
+    let url = "../Back-End-PHP/obtenerEventos.php";
+    if (tipo) {
+        url += `?tipo=${encodeURIComponent(tipo)}`;
+    }
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.eventos.length > 0) {
+                mostrarEventos(data.eventos);
+            } else {
+                main.innerHTML = '<p style="text-align: center;">No hay eventos disponibles de este tipo.</p>';
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            main.innerHTML = '<p style="text-align: center; color: red;">Error al cargar eventos.</p>';
+        });
+}
 
-      data.forEach(evento => {
-        let colorFondo = "#f9f9f9";
-        if (evento.actividad.toLowerCase().includes("fútbol")) colorFondo = "#d1e7ff";
-        if (evento.actividad.toLowerCase().includes("natación")) colorFondo = "#d4edda";
-
+function mostrarEventos(eventos) {
+    const main = document.querySelector("main");
+    main.innerHTML = "";
+    
+    eventos.forEach(evento => {
         const tarjeta = document.createElement("div");
         tarjeta.className = "evento-card";
-        tarjeta.style.backgroundColor = colorFondo;
-        tarjeta.style.margin = "10px 0";
-        tarjeta.style.padding = "15px";
+        tarjeta.style.cursor = "pointer";
         tarjeta.style.border = "1px solid #ccc";
         tarjeta.style.borderRadius = "8px";
+        tarjeta.style.padding = "15px";
+        tarjeta.style.margin = "10px 0";
         tarjeta.style.boxShadow = "0 2px 5px rgba(0,0,0,0.1)";
-
+        tarjeta.style.backgroundColor = "#f9f9f9";
+        
         tarjeta.innerHTML = `
-          <h2>${evento.nombre}</h2>
-          <p><strong>Actividad:</strong> ${evento.actividad}</p>
-          <p><strong>Descripción:</strong> ${evento.descripcion}</p>
-          <p><strong>Fecha:</strong> ${evento.fecha}</p>
-          <p><strong>Lugar:</strong> ${evento.lugar}</p>
+            <h2>${evento.nombre}</h2>
+            <p><strong>Descripción:</strong> ${evento.descripcion}</p>
+            <p><strong>Fecha:</strong> ${formatearFecha(evento.fecha)}</p>
+            <p><strong>Lugar:</strong> ${evento.lugar}</p>
+            <p><strong>Actividad:</strong> ${evento.actividad}</p>
         `;
-
-        tarjeta.style.cursor = "pointer";
-        tarjeta.onclick = () => window.location.href = "actividades.html";
-
+        
         main.appendChild(tarjeta);
-      });
-    })
-    .catch(err => {
-      console.error("Error al cargar los eventos:", err);
-      main.insertAdjacentHTML("beforeend", "<p style='color:red;'>No se pudieron cargar los eventos.</p>");
     });
-});
+}
+
+function formatearFecha(fecha) {
+    const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(fecha).toLocaleDateString('es-MX', opciones);
+}

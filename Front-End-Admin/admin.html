@@ -8,14 +8,6 @@
 </head>
 <body>
 
-  <script>
-    // Validar sesión
-    const usuario = localStorage.getItem("usuarioLogeado");
-    if (!usuario) {
-      window.location.href = "../Front-End-Usuario/login.html";
-    }
-  </script>
-
   <!-- HEADER -->
   <header class="main-header">
     <div class="logo">
@@ -23,39 +15,151 @@
     </div>
     <div class="title">
       <h1>Universidad Autónoma de Baja California</h1>
-      <p>Centro Deportivo</p>
+      <p>Panel Administrativo</p>
     </div>
-    <div class="logout" onclick="cerrarSesion()" title="Cerrar sesión">
-      ⎋
+    <div class="logout" style="cursor: pointer;" id="btnCerrarSesion" title="Cerrar sesión">
+      <i>⎋</i>
     </div>
   </header>
 
   <!-- NAV -->
   <nav class="main-nav">
     <ul>
-      <li><a href="../index.html">Inicio</a></li>
-      <li><a href="../Front-End-Usuario/eventos.html">Eventos</a></li>
-      <li><a href="../Front-End-Usuario/torneos.html">Torneos</a></li>
-      <li><a href="../Front-End-Usuario/actividades.html">Actividades</a></li>
-      <li><a href="../Front-End-Usuario/contacto.html">Contacto</a></li>
-      <li><a href="../index.html" onclick="cerrarSesion()">Cerrar Sesion</a></li>
+      <li><a href="admin.html">Dashboard</a></li>
+      <li><a href="gestionar-eventos.html">Gestionar Eventos</a></li>
+      <li><a href="ver-inscripciones.html">Inscripciones</a></li>
+      <li><a href="ver-mensajes.html">Mensajes</a></li>
+      <li><a href="../index.html">Ver Sitio Público</a></li>
     </ul>
   </nav>
 
+  <!-- CONTENIDO -->
   <main class="page-content">
-    <h1>Bienvenido, <span id="nombreUsuario"></span></h1>
-    <p>Has iniciado sesion correctamente. Aqui puedes administrar tus eventos y torneos.</p>
+    <h1>Bienvenido al Panel Administrativo</h1>
+    <p id="mensaje-bienvenida">Cargando información...</p>
+
+    <!-- Tarjetas de estadísticas -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 30px;">
+      
+      <!-- Tarjeta Eventos -->
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <h3 style="margin: 0 0 10px 0; font-size: 18px;">Total Eventos</h3>
+        <p style="font-size: 48px; font-weight: bold; margin: 10px 0;" id="total-eventos">-</p>
+        <a href="gestionar-eventos.html" style="color: white; text-decoration: none; font-size: 14px; opacity: 0.9;">Ver todos →</a>
+      </div>
+
+      <!-- Tarjeta Inscripciones -->
+      <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <h3 style="margin: 0 0 10px 0; font-size: 18px;">Inscripciones</h3>
+        <p style="font-size: 48px; font-weight: bold; margin: 10px 0;" id="total-inscripciones">-</p>
+        <a href="ver-inscripciones.html" style="color: white; text-decoration: none; font-size: 14px; opacity: 0.9;">Ver todas →</a>
+      </div>
+
+      <!-- Tarjeta Mensajes -->
+      <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+        <h3 style="margin: 0 0 10px 0; font-size: 18px;">Mensajes</h3>
+        <p style="font-size: 48px; font-weight: bold; margin: 10px 0;" id="total-mensajes">-</p>
+        <a href="ver-mensajes.html" style="color: white; text-decoration: none; font-size: 14px; opacity: 0.9;">Ver todos →</a>
+      </div>
+
+    </div>
+
+    <!-- Accesos rápidos -->
+    <div style="margin-top: 40px;">
+      <h2>Accesos Rápidos</h2>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px;">
+        <a href="gestionar-eventos.html" style="padding: 15px 30px; background: #003366; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+          ➕ Crear Nuevo Evento
+        </a>
+        <a href="ver-inscripciones.html" style="padding: 15px 30px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+          📋 Ver Inscripciones
+        </a>
+        <a href="ver-mensajes.html" style="padding: 15px 30px; background: #17a2b8; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+          ✉️ Ver Mensajes
+        </a>
+      </div>
+    </div>
   </main>
 
   <script>
-    // Mostrar nombre de usuario
-    document.getElementById("nombreUsuario").textContent = localStorage.getItem("usuarioLogeado");
+    // Verificar sesión al cargar
+    window.addEventListener('DOMContentLoaded', () => {
+      verificarSesion();
+      cargarEstadisticas();
+    });
 
-    // Cerrar sesion
-    function cerrarSesion() {
-      localStorage.removeItem("usuarioLogeado");
-      window.location.href = "../Front-End-Usuario/login.html";
+    function verificarSesion() {
+      fetch('../Back-End-Admin/verificarSesion.php')
+        .then(response => response.json())
+        .then(data => {
+          if (!data.loggedin) {
+            // No hay sesión válida, redirigir al login
+            window.location.href = '../Front-End-Usuario/login.html';
+          } else {
+            // Sesión válida, mostrar mensaje de bienvenida
+            document.getElementById('mensaje-bienvenida').textContent = 
+              `¡Hola ${data.nombre}! Aquí puedes administrar el contenido del sitio.`;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          window.location.href = '../Front-End-Usuario/login.html';
+        });
     }
+
+    function cargarEstadisticas() {
+      // Cargar total de eventos
+      fetch('../Back-End-PHP/obtenerEventos.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('total-eventos').textContent = data.total || 0;
+          }
+        })
+        .catch(error => console.error('Error al cargar eventos:', error));
+
+      // Cargar total de inscripciones
+      fetch('../Back-End-Admin/verInscripciones.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('total-inscripciones').textContent = data.total || 0;
+          }
+        })
+        .catch(error => console.error('Error al cargar inscripciones:', error));
+
+      // Cargar total de mensajes
+      fetch('../Back-End-Admin/verMensajes.php')
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            document.getElementById('total-mensajes').textContent = data.total || 0;
+          }
+        })
+        .catch(error => console.error('Error al cargar mensajes:', error));
+    }
+
+    // Cerrar sesión
+    document.getElementById('btnCerrarSesion').addEventListener('click', () => {
+      if (confirm('¿Estás seguro de cerrar sesión?')) {
+        fetch('../Back-End-Admin/cerrarSesion.php')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              // Limpiar localStorage por si acaso
+              localStorage.removeItem('usuarioLogeado');
+              // Redirigir al login
+              window.location.href = '../Front-End-Usuario/login.html';
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            // Forzar redirección aunque haya error
+            localStorage.removeItem('usuarioLogeado');
+            window.location.href = '../Front-End-Usuario/login.html';
+          });
+      }
+    });
   </script>
 
 </body>

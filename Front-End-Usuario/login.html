@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Centro Deportivo UABC</title>
+  <title>Login Administrativo - Centro Deportivo UABC</title>
   <link rel="stylesheet" href="../css/mystyle.css">
-  <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -16,7 +15,7 @@
     </div>
     <div class="title">
       <h1>Centro deportivo UABC Tijuana</h1>
-      <p>Sistema de registro para eventos deportivos</p>
+      <p>Panel Administrativo - Sistema de gestión</p>
     </div>
     <div class="logout"></div>
   </header>
@@ -26,35 +25,70 @@
     <div class="login-card">
       <img src="../image/pngaaa.com-3770431.png" alt="Logo Centro Deportivo UABC" class="login-logo">
       
+      <h2 style="text-align: center; margin-bottom: 20px; color: #003366;">Acceso Administrativo</h2>
+      <p style="text-align: center; color: #666; font-size: 14px; margin-bottom: 25px;">
+        Solo personal autorizado
+      </p>
+
       <form id="loginForm">
-        <input type="text" id="usuario" placeholder="Usuario" required>
-        <input type="password" id="contrasena" placeholder="Contraseña" required>
+        <input type="email" id="correo" name="correo" placeholder="Correo electrónico" required>
+        <input type="password" id="password" name="password" placeholder="Contraseña" required>
         <button type="submit">Ingresar</button>
       </form>
 
-      <p id="mensajeError" style="color:red; display:none;">Usuario o contraseña incorrectos</p>
+      <p id="mensajeError" style="color:red; display:none; text-align: center; margin-top: 15px;"></p>
+
+      <div style="margin-top: 25px; text-align: center; padding-top: 20px; border-top: 1px solid #ddd;">
+        <p style="font-size: 13px; color: #666;">
+          <a href="../index.html" style="color: #003366; text-decoration: none; font-weight: bold;">
+            ← Volver al inicio
+          </a>
+        </p>
+      </div>
     </div>
   </main>
 
   <script>
-    // Simulacion de credencial valida
-    const usuarioValido = "admin";
-    const contrasenaValida = "1234";
-
     document.getElementById("loginForm").addEventListener("submit", function(event) {
-      event.preventDefault(); // Evita recargar la pagina
+      event.preventDefault();
 
-      const usuario = document.getElementById("usuario").value;
-      const contrasena = document.getElementById("contrasena").value;
+      const formData = new FormData(this);
+      const btnSubmit = this.querySelector('button[type="submit"]');
+      const mensajeError = document.getElementById("mensajeError");
+      
+      // Deshabilitar botón mientras se procesa
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Verificando...';
+      mensajeError.style.display = 'none';
 
-      if (usuario === usuarioValido && contrasena === contrasenaValida) {
-        // Guardar sesion en localStorage 
-        localStorage.setItem("usuarioLogeado", usuario);
-        // Redirigir al panel admin
-        window.location.href = "../Front-End-Admin/admin.html";
-      } else {
-        document.getElementById("mensajeError").style.display = "block";
-      }
+      // Enviar petición al servidor
+      fetch('../Back-End-Admin/login.php', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Login exitoso - redirigir al dashboard admin
+          window.location.href = '../Front-End-Admin/admin.html';
+        } else {
+          // Mostrar error
+          mensajeError.textContent = data.mensaje;
+          mensajeError.style.display = 'block';
+          
+          // Rehabilitar botón
+          btnSubmit.disabled = false;
+          btnSubmit.textContent = 'Ingresar';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        mensajeError.textContent = 'Error de conexión. Intenta nuevamente.';
+        mensajeError.style.display = 'block';
+        
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Ingresar';
+      });
     });
   </script>
 
