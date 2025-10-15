@@ -1,27 +1,20 @@
 <?php
-$host = "localhost";
-$user = "root";
-$pass = "117546JuA";
-$db   = "base_prueba";
+include("conexion.php");
 
-$conn = new mysqli($host, $user, $pass, $db);
-if ($conn->connect_error) {
-    // devolver JSON de error
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode(["error" => "Error de conexión: " . $conn->connect_error]);
-    exit;
-}
-
-$sql = "SELECT * FROM evento ORDER BY startDate ASC";
+$sql = "SELECT e.id, e.nombre, e.descripcion, e.fecha, e.lugar, a.nombre AS actividad
+        FROM evento e
+        LEFT JOIN actividaddeportiva a ON e.id_actividad = a.id";
 $result = $conn->query($sql);
 
 $eventos = [];
-while ($row = $result->fetch_assoc()) {
-    $eventos[] = $row;
+
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $eventos[] = $row;
+    }
 }
 
-header('Content-Type: application/json; charset=utf-8');
-echo json_encode($eventos);
+echo json_encode($eventos, JSON_UNESCAPED_UNICODE);
 
 $conn->close();
 ?>
