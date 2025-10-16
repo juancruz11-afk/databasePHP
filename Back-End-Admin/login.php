@@ -9,19 +9,19 @@ include '../Back-End-PHP/conexion.php';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $correo = mysqli_real_escape_string($conexion, $_POST['correo']);
     $password = $_POST['password'];
-
-    // Buscar administrador
+    
+    // Buscar admin en la base de datos
     $sql = "SELECT * FROM usuario WHERE correo = '$correo' AND rol = 'Administrador'";
     $resultado = mysqli_query($conexion, $sql);
-
+    
     if ($fila = mysqli_fetch_assoc($resultado)) {
-        // Verificar contraseña con bcrypt
+        // Verificar contraseña con password_verify (tu BD usa hash)
         if (password_verify($password, $fila['contrasena'])) {
             $_SESSION['admin_id'] = $fila['id'];
             $_SESSION['admin_nombre'] = $fila['nombre'];
             $_SESSION['admin_correo'] = $fila['correo'];
             $_SESSION['admin_logged'] = true;
-
+            
             echo json_encode([
                 'success' => true,
                 'mensaje' => 'Bienvenido ' . $fila['nombre'],

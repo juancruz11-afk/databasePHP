@@ -199,3 +199,27 @@ body {
   transform: scale(1.03);
   background-color: #e8ffe8;
 }
+
+/* Estilos para el formulario de inscripción 
+#modal-inscripcion input[type="radio"]:checked + span {
+    color: #28a745;
+    font-weight: bold;
+}
+
+#modal-inscripcion input:focus,
+#modal-inscripcion select:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+#modal-inscripcion button[type="submit"]:hover {
+    background: #218838 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+#modal-inscripcion button#btnCerrarModal:hover {
+    background: #5a6268 !important;
+}*/

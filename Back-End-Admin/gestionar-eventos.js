@@ -96,10 +96,12 @@ function mostrarEventos(eventos) {
 }
 
 function formatearFecha(fecha) {
+    // FIX: Evitar conversión de zona horaria
+    // Agregar 'T00:00:00' fuerza que se interprete como hora local, no UTC
+    const fechaLocal = new Date(fecha + 'T00:00:00');
     const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(fecha).toLocaleDateString('es-MX', opciones);
+    return fechaLocal.toLocaleDateString('es-MX', opciones);
 }
-
 // Abrir modal para crear nuevo evento
 document.getElementById('btnNuevoEvento').addEventListener('click', () => {
     modoEdicion = false;
@@ -173,6 +175,10 @@ document.getElementById('formEvento').addEventListener('submit', (e) => {
     e.preventDefault();
     
     const formData = new FormData(e.target);
+    const fechaInput=document.getElementById('evento-fecha').value;
+    if (fechaInput){
+        formData.set('fecha', fechaInput);
+    }
     const btnSubmit = e.target.querySelector('button[type="submit"]');
     
     btnSubmit.disabled = true;

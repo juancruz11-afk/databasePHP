@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
 function cargarEventos(tipo = "") {
     const main = document.querySelector("main");
     
+    // Mostrar mensaje de carga
+    main.innerHTML = '<p style="text-align: center;">Cargando eventos...</p>';
+    
     // Construir URL con filtro opcional
     let url = "../Back-End-PHP/obtenerEventos.php";
     if (tipo) {
@@ -28,11 +31,20 @@ function cargarEventos(tipo = "") {
 
 function mostrarEventos(eventos) {
     const main = document.querySelector("main");
+    
+    // Mantener el título y descripción
+    const titulo = main.querySelector('h1');
+    const descripcion = main.querySelector('p');
+    
     main.innerHTML = "";
+    
+    if (titulo) main.appendChild(titulo);
+    if (descripcion) main.appendChild(descripcion);
     
     eventos.forEach(evento => {
         const tarjeta = document.createElement("div");
         tarjeta.className = "evento-card";
+        tarjeta.setAttribute('data-evento-id', evento.id); // ✅ IMPORTANTE: Agregar ID
         tarjeta.style.cursor = "pointer";
         tarjeta.style.border = "1px solid #ccc";
         tarjeta.style.borderRadius = "8px";
@@ -43,10 +55,10 @@ function mostrarEventos(eventos) {
         
         tarjeta.innerHTML = `
             <h2>${evento.nombre}</h2>
-            <p><strong>Descripción:</strong> ${evento.descripcion}</p>
+            <p><strong>Descripción:</strong> ${evento.descripcion || 'Sin descripción'}</p>
             <p><strong>Fecha:</strong> ${formatearFecha(evento.fecha)}</p>
             <p><strong>Lugar:</strong> ${evento.lugar}</p>
-            <p><strong>Actividad:</strong> ${evento.actividad}</p>
+            <p><strong>Actividad:</strong> ${evento.actividad || 'No especificada'}</p>
         `;
         
         main.appendChild(tarjeta);
@@ -54,6 +66,8 @@ function mostrarEventos(eventos) {
 }
 
 function formatearFecha(fecha) {
+    // FIX: Evitar conversión de zona horaria
+    const fechaLocal = new Date(fecha + 'T00:00:00');
     const opciones = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(fecha).toLocaleDateString('es-MX', opciones);
+    return fechaLocal.toLocaleDateString('es-MX', opciones);
 }

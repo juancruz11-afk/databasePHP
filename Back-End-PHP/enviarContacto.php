@@ -5,7 +5,6 @@ header('Access-Control-Allow-Origin: *');
 include 'conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Obtener y limpiar datos
     $nombre = mysqli_real_escape_string($conexion, trim($_POST['nombre']));
     $correo = mysqli_real_escape_string($conexion, trim($_POST['correo']));
     $asunto = mysqli_real_escape_string($conexion, trim($_POST['asunto']));
@@ -29,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
     
-    // Insertar mensaje en la base de datos
-    $sql = "INSERT INTO formulario (nombre, correo, asunto, mensaje, fecha) 
+    // Insertar mensaje
+    $sql = "INSERT INTO mensajes_contacto (nombre, correo, asunto, mensaje, fecha) 
             VALUES ('$nombre', '$correo', '$asunto', '$mensaje', NOW())";
     
     if (mysqli_query($conexion, $sql)) {

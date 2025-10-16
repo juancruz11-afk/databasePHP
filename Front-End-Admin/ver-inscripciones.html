@@ -57,8 +57,8 @@
             <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">ID</th>
             <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Nombre</th>
             <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Correo</th>
-            <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Teléfono</th>
             <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Evento</th>
+            <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Lugar</th>
             <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Fecha Evento</th>
             <th style="padding: 15px; text-align: left; border: 1px solid #ddd;">Fecha Inscripción</th>
           </tr>
@@ -88,7 +88,7 @@
         .then(response => response.json())
         .then(data => {
           if (!data.loggedin) {
-            window.location.href = 'login-admin.html';
+            window.location.href = '../Front-End-Usuario/login.html';
           }
         });
     }
@@ -130,8 +130,8 @@
           <td style="padding: 12px; border: 1px solid #ddd;">${insc.id}</td>
           <td style="padding: 12px; border: 1px solid #ddd;">${insc.nombre}</td>
           <td style="padding: 12px; border: 1px solid #ddd;">${insc.correo}</td>
-          <td style="padding: 12px; border: 1px solid #ddd;">${insc.telefono}</td>
           <td style="padding: 12px; border: 1px solid #ddd;"><strong>${insc.nombre_evento}</strong></td>
+          <td style="padding: 12px; border: 1px solid #ddd;">${insc.lugar}</td>
           <td style="padding: 12px; border: 1px solid #ddd;">${formatearFecha(insc.fecha_evento)}</td>
           <td style="padding: 12px; border: 1px solid #ddd;">${formatearFecha(insc.fecha_inscripcion)}</td>
         `;
@@ -140,8 +140,10 @@
     }
 
     function formatearFecha(fecha) {
-      const opciones = { year: 'numeric', month: 'short', day: 'numeric' };
-      return new Date(fecha).toLocaleDateString('es-MX', opciones);
+    // FIX: Evitar conversión de zona horaria
+    const fechaLocal = new Date(fecha + 'T00:00:00');
+    const opciones = { year: 'numeric', month: 'short', day: 'numeric' };
+    return fechaLocal.toLocaleDateString('es-MX', opciones);
     }
 
     // Búsqueda en tiempo real
@@ -159,7 +161,10 @@
     document.getElementById('btnCerrarSesion').addEventListener('click', () => {
       if (confirm('¿Cerrar sesión?')) {
         fetch('../Back-End-Admin/cerrarSesion.php')
-          .then(() => window.location.href = '../Front-End-Usuario/login.html');
+          .then(() => {
+            localStorage.removeItem('usuarioLogeado');
+            window.location.href = '../Front-End-Usuario/login.html';
+          });
       }
     });
   </script>

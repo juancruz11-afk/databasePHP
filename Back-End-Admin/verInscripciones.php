@@ -13,18 +13,18 @@ if (!isset($_SESSION['admin_logged']) || $_SESSION['admin_logged'] !== true) {
 
 include '../Back-End-PHP/conexion.php';
 
-// Obtener inscripciones con información del evento
+// Obtener inscripciones con información del evento y usuario
 $sql = "SELECT 
             i.id,
-            i.nombre,
-            i.correo,
-            i.telefono,
             i.fecha_inscripcion,
+            u.nombre,
+            u.correo,
             e.nombre as nombre_evento,
             e.fecha as fecha_evento,
             e.lugar
         FROM inscripcion i 
-        INNER JOIN evento e ON i.evento_id = e.id 
+        INNER JOIN usuario u ON i.id_usuario = u.id
+        INNER JOIN evento e ON i.id_evento = e.id 
         ORDER BY i.fecha_inscripcion DESC";
         
 $resultado = mysqli_query($conexion, $sql);

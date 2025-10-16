@@ -19,9 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion']);
     $fecha = mysqli_real_escape_string($conexion, $_POST['fecha']);
     $lugar = mysqli_real_escape_string($conexion, $_POST['lugar']);
-    $actividad = mysqli_real_escape_string($conexion, $_POST['actividad']);
+    $actividad_nombre = mysqli_real_escape_string($conexion, $_POST['actividad']);
     
-    // Validar que el evento exista
+    // ✅ FIX: Asegurar que la fecha se guarde correctamente
+    // Ya que el campo es DATE en MySQL, no necesitamos agregar hora
+    
+    // Verificar que el evento exista
     $verificar = "SELECT * FROM evento WHERE id = $id";
     $resultado = mysqli_query($conexion, $verificar);
     
@@ -33,23 +36,37 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
     
-    $sql = "UPDATE evento SET 
-            nombre = '$nombre',
-            descripcion = '$descripcion',
-            fecha = '$fecha',
-            lugar = '$lugar',
-            actividad = '$actividad'
-            WHERE id = $id";
+    // Buscar el ID de la actividad
+    $sql_actividad = "SELECT id FROM actividaddeportiva WHERE nombre = '$actividad_nombre'";
+    $resultado_act = mysqli_query($conexion, $sql_actividad);
     
-    if (mysqli_query($conexion, $sql)) {
-        echo json_encode([
-            'success' => true,
-            'mensaje' => 'Evento actualizado correctamente'
-        ]);
+    if ($resultado_act && mysqli_num_rows($resultado_act) > 0) {
+        $actividad = mysqli_fetch_assoc($resultado_act);
+        $id_actividad = $actividad['id'];
+        
+        $sql = "UPDATE evento SET 
+                nombre = '$nombre',
+                descripcion = '$descripcion',
+                fecha = '$fecha',
+                lugar = '$lugar',
+                id_actividad = $id_actividad
+                WHERE id = $id";
+        
+        if (mysqli_query($conexion, $sql)) {
+            echo json_encode([
+                'success' => true,
+                'mensaje' => 'Evento actualizado correctamente'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'mensaje' => 'Error al actualizar: ' . mysqli_error($conexion)
+            ]);
+        }
     } else {
         echo json_encode([
             'success' => false,
-            'mensaje' => 'Error al actualizar: ' . mysqli_error($conexion)
+            'mensaje' => 'Actividad deportiva no encontrada'
         ]);
     }
 } else {

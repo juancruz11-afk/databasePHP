@@ -13,7 +13,7 @@ if (!isset($_SESSION['admin_logged']) || $_SESSION['admin_logged'] !== true) {
 
 include '../Back-End-PHP/conexion.php';
 
-$sql = "SELECT * FROM formulario ORDER BY fecha DESC";
+$sql = "SELECT * FROM mensajes_contacto ORDER BY fecha DESC";
 $resultado = mysqli_query($conexion, $sql);
 
 $mensajes = array();

@@ -7,15 +7,17 @@ include 'conexion.php';
 // Obtener el tipo de actividad del parámetro GET
 $tipoActividad = isset($_GET['tipo']) ? $_GET['tipo'] : '';
 
-// Construir la consulta SQL
-$sql = "SELECT * FROM evento";
+// Construir la consulta SQL con JOIN
+$sql = "SELECT e.*, a.nombre as actividad 
+        FROM evento e 
+        LEFT JOIN actividaddeportiva a ON e.id_actividad = a.id";
 
 if (!empty($tipoActividad)) {
     $tipoActividad = mysqli_real_escape_string($conexion, $tipoActividad);
-    $sql .= " WHERE actividad = '$tipoActividad'";
+    $sql .= " WHERE a.nombre = '$tipoActividad'";
 }
 
-$sql .= " ORDER BY fecha DESC";
+$sql .= " ORDER BY e.fecha DESC";
 
 $resultado = mysqli_query($conexion, $sql);
 
