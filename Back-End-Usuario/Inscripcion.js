@@ -114,19 +114,19 @@ function mostrarFormularioInscripcion(eventoId) {
                         <label class="radio-option" style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: white; border-radius: 8px; border: 2px solid #e0e0e0; transition: all 0.2s;">
                             <input type="radio" name="tipo_participante" value="Estudiante" checked 
                                    style="margin-right: 12px; width: 20px; height: 20px; cursor: pointer; accent-color: #00843D;">
-                            <span style="font-size: 15px; font-weight: 500;">👨‍🎓 Estudiante</span>
+                            <span style="font-size: 15px; font-weight: 500;">Estudiante</span>
                         </label>
                         
                         <label class="radio-option" style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: white; border-radius: 8px; border: 2px solid #e0e0e0; transition: all 0.2s;">
                             <input type="radio" name="tipo_participante" value="Maestro/Personal Académico" 
                                    style="margin-right: 12px; width: 20px; height: 20px; cursor: pointer; accent-color: #00843D;">
-                            <span style="font-size: 15px; font-weight: 500;">👨‍🏫 Maestro / Personal Académico</span>
+                            <span style="font-size: 15px; font-weight: 500;">Maestro / Personal Académico</span>
                         </label>
                         
                         <label class="radio-option" style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: white; border-radius: 8px; border: 2px solid #e0e0e0; transition: all 0.2s;">
                             <input type="radio" name="tipo_participante" value="Externo" 
                                    style="margin-right: 12px; width: 20px; height: 20px; cursor: pointer; accent-color: #00843D;">
-                            <span style="font-size: 15px; font-weight: 500;">🌐 Externo</span>
+                            <span style="font-size: 15px; font-weight: 500;">Externo</span>
                         </label>
                     </div>
                 </div>

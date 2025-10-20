@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $lugar = mysqli_real_escape_string($conexion, $_POST['lugar']);
     $actividad_nombre = mysqli_real_escape_string($conexion, $_POST['actividad']);
     
-    // ✅ FIX: Asegurar que la fecha se guarde correctamente sin ajuste de zona horaria
+    // FIX: Asegurar que la fecha se guarde correctamente sin ajuste de zona horaria
     // Agregar hora del mediodía para evitar problemas de zona horaria
     $fecha_completa = $fecha . ' 12:00:00';
     

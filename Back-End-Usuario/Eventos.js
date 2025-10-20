@@ -1,5 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // ✅ SIEMPRE cargar los eventos al inicio
     cargarEventos();
+    
+    const params = new URLSearchParams(window.location.search);
+    const eventoId = params.get('id_evento');
+
+    if (eventoId) {
+        // Si viene de un QR, mostrar el formulario
+        mostrarFormularioInscripcion(eventoId);
+        // Scroll al evento después de que carguen
+        setTimeout(() => {
+            const tarjeta = document.querySelector(`[data-evento-id="${eventoId}"]`);
+            if(tarjeta) tarjeta.scrollIntoView({behavior: "smooth", block: "center"});
+        }, 500);
+    }
 });
 
 function cargarEventos(tipo = "") {

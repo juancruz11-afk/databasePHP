@@ -81,17 +81,28 @@ function mostrarEventos(eventos) {
                 <div style="display: flex; gap: 10px;">
                     <button onclick="editarEvento(${evento.id})" 
                             style="padding: 8px 15px; background: #ffc107; color: #333; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                        ✏️ Editar
+                        Editar
                     </button>
                     <button onclick="eliminarEvento(${evento.id}, '${evento.nombre}')" 
                             style="padding: 8px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
-                        🗑️ Eliminar
+                        Eliminar
                     </button>
+
+                    <button id="btnGenerarQR${evento.id}" data-id="${evento.id}"
+                            style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">
+                        Generar QR
+                    </button>
+
                 </div>
             </div>
         `;
         
         container.appendChild(card);
+
+        card.querySelector(`#btnGenerarQR${evento.id}`).addEventListener('click', () => {
+            generarQR(evento.id);
+        });
+
     });
 }
 
@@ -112,6 +123,7 @@ document.getElementById('btnNuevoEvento').addEventListener('click', () => {
     document.getElementById('modalEvento').style.display = 'flex';
 });
 
+
 // Cerrar modal
 document.getElementById('btnCancelar').addEventListener('click', () => {
     document.getElementById('modalEvento').style.display = 'none';
@@ -123,7 +135,7 @@ function editarEvento(id) {
     eventoEditandoId = id;
     
     // Buscar el evento en la lista actual
-    fetch(`../Back-End-PHP/obtenerEventos.php`)
+    fetch('../Back-End-PHP/obtenerEventos.php')
         .then(response => response.json())
         .then(data => {
             const evento = data.eventos.find(e => e.id == id);
@@ -170,13 +182,279 @@ function eliminarEvento(id, nombre) {
     });
 }
 
+function generarQR(id_evento) {
+    const enlaceEvento = `http://localhost/Proyecto-Deportes/Front-End-Usuario/eventos.html?id_evento=${id_evento}`;
+    
+    // Crear modal con estilos inline (igual que modalEvento)
+    const modalQR = document.createElement('div');
+    modalQR.id = 'modal-qr';
+    modalQR.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; overflow-y: auto; align-items: center; justify-content: center;';
+    
+    modalQR.innerHTML = `
+        <div style="max-width: 600px; background: white; padding: 30px; border-radius: 10px; margin: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <h2 style="margin: 0 0 10px 0; color: #003366; font-size: 24px; text-align: center;">Código QR Generado</h2>
+            
+            <p style="margin: 0 0 25px 0; color: #666; text-align: center; font-size: 15px;">Escanea este código para registrarte al evento</p>
+            
+            <!-- Contenedor del QR -->
+            <div style="display: flex; justify-content: center; margin: 25px 0; padding: 25px; background: #f9f9f9; border-radius: 8px; border: 2px dashed #ddd;">
+                <div id="codigoQR"></div>
+            </div>
+            
+            <!-- Enlace directo -->
+            <div style="margin: 20px 0; padding: 15px; background: #e8f5e9; border-radius: 5px; border-left: 4px solid #28a745;">
+                <p style="margin: 0; font-size: 13px; color: #555; word-break: break-all; line-height: 1.6;">
+                    <strong style="display: block; margin-bottom: 8px; color: #003366; font-size: 14px;">📎 Enlace directo:</strong>
+                    <span style="color: #28a745; font-family: 'Courier New', monospace; font-size: 12px;">${enlaceEvento}</span>
+                </p>
+            </div>
+            
+            <!-- Botones -->
+            <div style="display: flex; gap: 10px; margin-top: 25px;">
+                <button id="btnDescargarQR" style="flex: 1; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px; transition: all 0.3s;">
+                    Descargar QR
+                </button>
+                <button id="btnCopiarURL" style="padding: 12px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s;">
+                    Copiar URL
+                </button>
+                <button id="btnCerrarQR" style="flex: 1; padding: 12px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 15px; transition: all 0.3s;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalQR);
+    
+    // Generar el QR
+    const divQR = document.getElementById("codigoQR");
+    new QRCode(divQR, {
+        text: enlaceEvento,
+        width: 220,
+        height: 220,
+        colorDark: "#003366",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    // Efectos hover en botones
+    const btnDescargar = document.getElementById('btnDescargarQR');
+    const btnCopiar = document.getElementById('btnCopiarURL');
+    const btnCerrar = document.getElementById('btnCerrarQR');
+
+    // hover descargar
+    btnDescargar.addEventListener('mouseenter', () => {
+        btnDescargar.style.background = '#0056b3';
+        btnDescargar.style.transform = 'translateY(-2px)';
+        btnDescargar.style.boxShadow = '0 4px 8px rgba(0,123,255,0.3)';
+    });
+    btnDescargar.addEventListener('mouseleave', () => {
+        btnDescargar.style.background = '#007bff';
+        btnDescargar.style.transform = 'translateY(0)';
+        btnDescargar.style.boxShadow = 'none';
+    });
+
+    // Hover copiar
+    btnCopiar.addEventListener('mouseenter', () => {
+        btnCopiar.style.background = '#138496';
+        btnCopiar.style.transform = 'translateY(-2px)';
+        btnCopiar.style.boxShadow = '0 4px 8px rgba(23,162,184,0.3)';
+    });
+
+    
+    // Hover Cerrar
+    btnCerrar.addEventListener('mouseenter', () => {
+        btnCerrar.style.background = '#5a6268';
+        btnCerrar.style.transform = 'translateY(-2px)';
+        btnCerrar.style.boxShadow = '0 4px 8px rgba(108,117,125,0.3)';
+    });
+    btnCerrar.addEventListener('mouseleave', () => {
+        btnCerrar.style.background = '#6c757d';
+        btnCerrar.style.transform = 'translateY(0)';
+        btnCerrar.style.boxShadow = 'none';
+    });
+    
+    // Funcionalidad botón descargar
+    btnDescargar.addEventListener('click', () => {
+        const img = divQR.querySelector("img");
+        if (img) {
+            const enlace = document.createElement("a");
+            enlace.href = img.src;
+            enlace.download = `QR_evento_${id_evento}.png`;
+            enlace.click();
+            
+            // Feedback visual
+            btnDescargar.textContent = '✅ Descargado';
+            setTimeout(() => {
+                btnDescargar.innerHTML = '📥 Descargar QR';
+            }, 2000);
+        }
+    });
+
+    // Funcionalidad botón copiar URL
+    btnCopiar.addEventListener('click', () => {
+        navigator.clipboard.writeText(enlaceEvento).then(() => {
+            btnCopiar.textContent = '✅ Copiado';
+            btnCopiar.style.background = '#28a745';
+            setTimeout(() => {
+                btnCopiar.innerHTML = '📋 Copiar URL';
+                btnCopiar.style.background = '#17a2b8';
+            }, 2000);
+        });
+    });
+    
+    // Funcionalidad botón cerrar
+    btnCerrar.addEventListener('click', () => {
+        modalQR.remove();
+    });
+    
+    // Cerrar con click fuera del modal
+    modalQR.addEventListener('click', (e) => {
+        if (e.target === modalQR) {
+            modalQR.remove();
+        }
+    });
+    
+    // Cerrar con tecla ESC
+    const cerrarConEsc = (e) => {
+        if (e.key === 'Escape') {
+            modalQR.remove();
+            document.removeEventListener('keydown', cerrarConEsc);
+        }
+    };
+    document.addEventListener('keydown', cerrarConEsc);
+}
+
+// Modal de éxito con QR después de crear evento
+function mostrarModalExitoConQR(id_evento, mensaje) {
+    const enlaceEvento = `http://localhost/Proyecto-Deportes/Front-End-Usuario/eventos.html?id_evento=${id_evento}`;
+    
+    const modalExito = document.createElement('div');
+    modalExito.id = 'modal-exito-qr';
+    modalExito.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 9999; overflow-y: auto; align-items: center; justify-content: center;';
+    
+    modalExito.innerHTML = `
+        <div style="max-width: 650px; background: white; padding: 35px; border-radius: 10px; margin: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            
+            <!-- Ícono de éxito -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <h2 style="margin: 0 0 8px 0; color: #28a745; font-size: 26px; font-weight: bold;">¡Evento Creado Exitosamente!</h2>
+                <p style="margin: 0; color: #666; font-size: 15px;">${mensaje}</p>
+            </div>
+            
+            <!-- Separador -->
+            <div style="height: 1px; background: linear-gradient(90deg, transparent, #ddd, transparent); margin: 25px 0;"></div>
+            
+            <!-- Título del QR -->
+            <h3 style="margin: 0 0 15px 0; color: #003366; font-size: 20px; text-align: center;">
+                📱 Código QR del Evento
+            </h3>
+            <p style="margin: 0 0 20px 0; color: #666; text-align: center; font-size: 14px;">
+                Comparte este QR para que los participantes se registren
+            </p>
+            
+            <!-- Contenedor del QR -->
+            <div style="display: flex; justify-content: center; margin: 20px 0; padding: 30px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border: 3px dashed #28a745;">
+                <div id="codigoQRExito"></div>
+            </div>
+            
+            <!-- Enlace directo -->
+            <div style="margin: 20px 0; padding: 15px; background: #d4edda; border-radius: 8px; border-left: 4px solid #28a745;">
+                <p style="margin: 0; font-size: 13px; color: #155724; word-break: break-all; line-height: 1.6;">
+                    <strong style="display: block; margin-bottom: 8px; font-size: 14px;">🔗 Enlace de registro:</strong>
+                    <span style="color: #28a745; font-family: 'Courier New', monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px; display: inline-block; width: 100%; box-sizing: border-box;">${enlaceEvento}</span>
+                </p>
+            </div>
+            
+            <!-- Botones -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 25px;">
+                <button id="btnDescargarQRExito" style="padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s;">
+                    📥 Descargar
+                </button>
+                <button id="btnCopiarEnlace" style="padding: 12px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s;">
+                    📋 Copiar Link
+                </button>
+                <button id="btnCerrarExito" style="padding: 12px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; transition: all 0.3s;">
+                    ✓ Finalizar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modalExito);
+    
+    // Generar el QR
+    const divQR = document.getElementById("codigoQRExito");
+    new QRCode(divQR, {
+        text: enlaceEvento,
+        width: 240,
+        height: 240,
+        colorDark: "#003366",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    // Botón descargar
+    document.getElementById('btnDescargarQRExito').addEventListener('click', () => {
+        const img = divQR.querySelector("img");
+        if (img) {
+            const enlace = document.createElement("a");
+            enlace.href = img.src;
+            enlace.download = `QR_evento_${id_evento}.png`;
+            enlace.click();
+            
+            const btn = document.getElementById('btnDescargarQRExito');
+            btn.textContent = '✅ Descargado';
+            btn.style.background = '#28a745';
+            setTimeout(() => {
+                btn.innerHTML = '📥 Descargar';
+                btn.style.background = '#007bff';
+            }, 2000);
+        }
+    });
+    
+    // Botón copiar enlace
+    document.getElementById('btnCopiarEnlace').addEventListener('click', () => {
+        navigator.clipboard.writeText(enlaceEvento).then(() => {
+            const btn = document.getElementById('btnCopiarEnlace');
+            btn.textContent = '✅ Copiado';
+            btn.style.background = '#28a745';
+            setTimeout(() => {
+                btn.innerHTML = '📋 Copiar Link';
+                btn.style.background = '#17a2b8';
+            }, 2000);
+        });
+    });
+    
+    // Botón cerrar
+    document.getElementById('btnCerrarExito').addEventListener('click', () => {
+        modalExito.remove();
+    });
+    
+    // Cerrar con ESC
+    const cerrarConEsc = (e) => {
+        if (e.key === 'Escape') {
+            modalExito.remove();
+            document.removeEventListener('keydown', cerrarConEsc);
+        }
+    };
+    document.addEventListener('keydown', cerrarConEsc);
+}
+
+
 // Guardar evento (crear o editar)
 document.getElementById('formEvento').addEventListener('submit', (e) => {
     e.preventDefault();
     
     const formData = new FormData(e.target);
-    const fechaInput=document.getElementById('evento-fecha').value;
-    if (fechaInput){
+    const fechaInput = document.getElementById('evento-fecha').value;
+    if (fechaInput) {
         formData.set('fecha', fechaInput);
     }
     const btnSubmit = e.target.querySelector('button[type="submit"]');
@@ -194,11 +472,21 @@ document.getElementById('formEvento').addEventListener('submit', (e) => {
     })
     .then(response => response.json())
     .then(data => {
-        mostrarMensaje(data.mensaje, data.success ? 'success' : 'error');
-        
         if (data.success) {
+            // Cerrar modal de formulario
             document.getElementById('modalEvento').style.display = 'none';
+            
+            // Recargar eventos
             cargarEventos();
+            
+            // Si es creación (no edición), mostrar modal de éxito con QR
+            if (!modoEdicion && data.id) {
+                mostrarModalExitoConQR(data.id, data.mensaje);
+            } else {
+                mostrarMensaje(data.mensaje, 'success');
+            }
+        } else {
+            mostrarMensaje(data.mensaje, 'error');
         }
     })
     .catch(error => {
