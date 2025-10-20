@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // ✅ SIEMPRE cargar los eventos al inicio
     cargarEventos();
     
     const params = new URLSearchParams(window.location.search);

@@ -506,7 +506,7 @@ function enviarInscripcion(form, modal) {
         if (data.success) {
             mostrarModalExito(data.mensaje, modal);
         } else {
-            mostrarToast('❌ ' + data.mensaje, 'error');
+            mostrarToast('' + data.mensaje, 'error');
             btnEnviar.disabled = false;
             btnEnviar.innerHTML = `
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">
@@ -521,7 +521,7 @@ function enviarInscripcion(form, modal) {
     })
     .catch(error => {
         console.error('Error:', error);
-        mostrarToast('❌ Error al procesar la inscripción. Intenta de nuevo.', 'error');
+        mostrarToast('Error al procesar la inscripción. Intenta de nuevo.', 'error');
         btnEnviar.disabled = false;
         btnEnviar.innerHTML = `
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 8px;">

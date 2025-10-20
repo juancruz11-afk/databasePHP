@@ -2,8 +2,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 header('Content-Type: application/json');
-// NO DEBE HABER NADA ANTES DE ESTA LÍNEA
-header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
 include 'conexion.php';
@@ -32,4 +30,3 @@ try {
 }
 
 mysqli_close($conexion);
-// NO DEBE HABER NADA DESPUÉS DE ESTA LÍNEA

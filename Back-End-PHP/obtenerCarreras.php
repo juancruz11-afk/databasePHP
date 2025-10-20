@@ -35,4 +35,3 @@ try {
 }
 
 mysqli_close($conexion);
-// NO DEBE HABER NADA DESPUÉS DE ESTA LÍNEA
